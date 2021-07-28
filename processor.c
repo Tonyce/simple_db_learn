@@ -13,7 +13,7 @@ MetaCommandResult do_meta_command(InputBuffer* input_buffer) {
 PrepareResult prepare_insert(InputBuffer* input_buffer, Statement* statement) {
     statement->type = STATEMENT_INSERT;
 
-    printf("buffer: %s\n", input_buffer->buffer);
+    // printf("buffer: %s\n", input_buffer->buffer);
 
     // strtok 分割字符串的 insert -1 cstack foo@bar.com
     char* keyword = strtok(input_buffer->buffer, " "); // insert
@@ -21,10 +21,10 @@ PrepareResult prepare_insert(InputBuffer* input_buffer, Statement* statement) {
     char* username = strtok(NULL, " "); // cstack
     char* email = strtok(NULL, " "); // foo@bar.com
 
-    printf(
-        "%s, %s, %s, %s, %s\n", 
-        keyword, id_string, username, email, input_buffer->buffer
-    );
+    // printf(
+    //     "%s, %s, %s, %s, %s\n", 
+    //     keyword, id_string, username, email, input_buffer->buffer
+    // );
 
     if (id_string == NULL || username == NULL || email == NULL) {
         return PREPARE_SYNTAX_ERROR;
