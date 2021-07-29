@@ -15,17 +15,27 @@ typedef struct Row {
     char email[COLUMN_EMAIL_SIZE + 1];
 } Row;
 
+typedef struct Pager {
+    int file_descriptor;
+    uint32_t file_length;
+    void* pages[TABLE_MAX_PAGES];
+} Pager;
+
 typedef struct Table {
     uint32_t num_rows;
-    void* pages[TABLE_MAX_PAGES];
+    Pager* pager;
 } Table;
 
 
 void serialize_row(Row* source, void* destination);
 void deserialize_row(void* source, Row* destination);
 
-Table* new_table();
-void free_table(Table* table);
+Table* db_open(const char* filename);
+void db_close(Table* table);
+
+Pager* pager_open(const char* filename);
+void* get_page(Pager* pager, uint32_t page_num);
+void pager_flush(Pager* pager, uint32_t page_num, uint32_t size);
 
 void print_row(Row* r);
 void* row_slot(Table* t, uint32_t n);
