@@ -2,6 +2,7 @@
 #define __table_h
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -26,6 +27,12 @@ typedef struct Table {
     Pager* pager;
 } Table;
 
+typedef struct Cursor {
+    Table* table;
+    uint32_t row_num;
+    bool end_of_table;
+} Cursor;
+
 
 void serialize_row(Row* source, void* destination);
 void deserialize_row(void* source, Row* destination);
@@ -38,6 +45,11 @@ void* get_page(Pager* pager, uint32_t page_num);
 void pager_flush(Pager* pager, uint32_t page_num, uint32_t size);
 
 void print_row(Row* r);
-void* row_slot(Table* t, uint32_t n);
+
+Cursor* table_start(Table* table);
+Cursor* table_end(Table* table);
+
+void* cursor_value(Cursor* cursor);
+void cursor_advance(Cursor* cursor);
 
 #endif
