@@ -30,6 +30,7 @@ typedef struct Statement {
 typedef enum {
     EXECUTE_SUCCESS,
     EXECUTE_TABLE_FULL,
+    EXECUT_DUPLICATE_KEY,
 } ExecuteResult;
 
 MetaCommandResult do_meta_command(InputBuffer* input_buffer, Table* table);
