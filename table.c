@@ -259,8 +259,7 @@ Cursor* table_find(Table* table, uint32_t key) {
     if (get_node_type(root_node) == NODE_LEAF) {
         return leaf_node_find(table, root_page_num, key);
     } else {
-        printf("Need to implement searching an internal node\n");
-        exit(EXIT_FAILURE);
+        return internal_node_find(table, root_page_num, key);
     }
 }
 
@@ -350,6 +349,33 @@ Cursor* leaf_node_find(Table* table, uint32_t page_num, uint32_t key) {
     return cursor;
 }
 
+Cursor* internal_node_find(Table* table, uint32_t page_num, uint32_t key) {
+    void* node = get_page(table->pager, page_num);
+    uint32_t num_keys = *internal_node_num_keys(node);
+
+    uint32_t min_index = 0;
+    uint32_t max_index = num_keys;
+
+    while (min_index != max_index) {
+        uint32_t index = (min_index + max_index) / 2;
+        uint32_t key_to_right = *internal_node_key(node, index);
+        if (key_to_right >= key) {
+            max_index = index;
+        } else {
+            min_index = index + 1;
+        }
+    }
+
+    uint32_t child_num = *internal_node_child(node, min_index);
+    void* child = get_page(table->pager, child_num);
+    switch (get_node_type(child)) {
+    case NODE_LEAF:
+        return leaf_node_find(table, child_num, key);
+    case NODE_INTERNAL:
+        return internal_node_find(table, child_num, key);
+    }  
+};
+
 void print_constants() {
     printf("ROW_SIZE: %d\n", ROW_SIZE);
     printf("COMMON_NODE_HEADER_SIZE: %d\n", COMMON_NODE_HEADER_SIZE);
@@ -415,7 +441,6 @@ void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* value) {
             destination_node = old_node;
         }
 
-
         uint32_t index_within_node = i % LEAF_NODE_LEFT_SPLIT_COUNT;
         void* destination = leaf_node_cell(destination_node, index_within_node);
         if (i == cursor->cell_num) {
@@ -459,6 +484,7 @@ void create_new_root(Table* table, uint32_t right_child_page_num) {
     *internal_node_child(root, 0) = left_child_page_num;
     uint32_t left_child_max_key = get_node_max_key(left_child);
     *internal_node_key(root, 0) = left_child_max_key;
+
     *internal_node_right_child(root) = right_child_page_num;
 };
 

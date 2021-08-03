@@ -31,7 +31,7 @@ typedef struct Pager {
 } Pager;
 
 typedef struct Table {
-    uint32_t root_page_num; //? -> 一共存了几个 page
+    uint32_t root_page_num;
     Pager* pager;
 } Table;
 
@@ -76,6 +76,7 @@ void initialize_internal_node(void* node);
 
 void leaf_node_insert(Cursor* cursor, uint32_t key, Row* value);
 Cursor* leaf_node_find(Table* table, uint32_t page_num, uint32_t key);
+Cursor* internal_node_find(Table* table, uint32_t page_num, uint32_t key);
 NodeType get_node_type(void* node);
 void set_node_type(void* node, NodeType type);
 void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* row);
