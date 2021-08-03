@@ -98,4 +98,6 @@ uint32_t* internal_node_right_child(void* node);
 
 uint32_t get_node_max_key(void* node);
 
+uint32_t* leaf_node_next_leaf(void* node);
+
 #endif
